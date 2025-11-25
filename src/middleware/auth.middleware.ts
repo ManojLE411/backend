@@ -43,13 +43,26 @@ export const authenticate = async (
 
     next();
   } catch (error) {
-    if (error instanceof Error && error.message.includes('expired')) {
-      next(new UnauthorizedError('Token expired'));
-    } else if (error instanceof Error && error.message.includes('Invalid')) {
-      next(new UnauthorizedError('Invalid token'));
-    } else {
-      next(new UnauthorizedError('Authentication failed'));
+    // Handle UnauthorizedError directly (already properly formatted)
+    if (error instanceof UnauthorizedError) {
+      return next(error);
     }
+
+    // Handle JWT-related errors
+    if (error instanceof Error) {
+      const errorMessage = error.message.toLowerCase();
+      
+      if (errorMessage.includes('expired') || errorMessage.includes('jwt expired')) {
+        return next(new UnauthorizedError('Token expired'));
+      }
+      
+      if (errorMessage.includes('invalid') || errorMessage.includes('jwt malformed') || errorMessage.includes('jwt signature')) {
+        return next(new UnauthorizedError('Invalid token'));
+      }
+    }
+
+    // Fallback for any other error
+    next(new UnauthorizedError('Authentication failed'));
   }
 };
 
