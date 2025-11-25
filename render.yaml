@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: imtda-backend
+    runtime: node
+    buildCommand: yarn install && yarn build
+    startCommand: yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # REQUIRED - Add these in Render dashboard (Environment tab):
+      # - MONGODB_URI (required)
+      # - JWT_SECRET (required, min 32 characters)
+      # - CORS_ORIGIN (required, your frontend URL)
+      # - API_BASE_URL (optional, defaults to http://localhost:5000)
+      # 
+      # OPTIONAL - Add if needed:
+      # - MONGODB_URI_PROD (if different from MONGODB_URI)
+      # - JWT_EXPIRES_IN (default: 15m)
+      # - JWT_REFRESH_EXPIRES_IN (default: 7d)
+      # - MAX_FILE_SIZE (default: 5242880 bytes)
+      # - UPLOAD_PATH (default: ./uploads)
+      # - SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM (for email)
+      # - ADMIN_REGISTRATION_KEY (for admin registration)
+
