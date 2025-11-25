@@ -27,23 +27,42 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
+      // List of allowed origins
+      const allowedOrigins: string[] = [];
+      
+      // Add configured CORS_ORIGIN
+      if (env.CORS_ORIGIN) {
+        // Support comma-separated list of origins
+        const origins = env.CORS_ORIGIN.split(',').map(o => o.trim());
+        allowedOrigins.push(...origins);
+      }
+      
       // In development, allow all localhost origins
       if (env.NODE_ENV === 'development') {
         // Allow any localhost or 127.0.0.1 with any port
         if (
           origin.startsWith('http://localhost:') ||
-          origin.startsWith('http://127.0.0.1:') ||
-          origin === env.CORS_ORIGIN
+          origin.startsWith('http://127.0.0.1:')
         ) {
           return callback(null, true);
         }
       }
       
-      // In production, only allow the configured origin
-      if (origin === env.CORS_ORIGIN) {
+      // In production, also allow common Render.com patterns
+      if (env.NODE_ENV === 'production') {
+        // Allow Render.com subdomains (e.g., https://imtda-1.onrender.com)
+        if (origin.includes('.onrender.com')) {
+          return callback(null, true);
+        }
+      }
+      
+      // Check if origin is in allowed list
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       
+      // Log rejected origin for debugging
+      console.warn(`CORS: Origin "${origin}" not allowed. Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
