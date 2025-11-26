@@ -48,14 +48,6 @@ app.use(
         }
       }
       
-      // In production, also allow common Render.com patterns
-      if (env.NODE_ENV === 'production') {
-        // Allow Render.com subdomains (e.g., https://imtda-1.onrender.com)
-        if (origin.includes('.onrender.com')) {
-          return callback(null, true);
-        }
-      }
-      
       // Check if origin is in allowed list
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
