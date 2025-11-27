@@ -18,7 +18,12 @@ import path from 'path';
 const app: Express = express();
 
 // Security middleware
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // CORS configuration
 app.use(
@@ -29,6 +34,9 @@ app.use(
       
       // List of allowed origins
       const allowedOrigins: string[] = [];
+      
+      // Add production frontend URL
+      allowedOrigins.push('https://imtda.onrender.com');
       
       // Add configured CORS_ORIGIN
       if (env.CORS_ORIGIN) {
